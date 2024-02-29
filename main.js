@@ -72,6 +72,6 @@ dcbot.onText(info, call => {
 dcbot.onText(location, msg => {
     // var location = "location";
     //     if (msg.text.indexOf(location) === 0) {
-    dcbot.sendLocation(msg.from.id, -6.922551, 113.6173587);
+    dcbot.sendLocation(msg.from.id, process.env.LOCATION);
     dcbot.sendMessage(msg.from.id, "ini lokasi anda tuan 📍");
 });
