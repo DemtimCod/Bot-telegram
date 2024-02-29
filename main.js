@@ -1,11 +1,11 @@
 const telegramBot = require("node-telegram-bot-api");
 
-const token = process.env.TOKEN;
-const options = {
-    polling: true
-};
+//const token = process.env.TOKEN;
+//const options = {
+//    polling: true
+//};
 
-const dcbot = new telegramBot(token, options);
+const dcbot = new telegramBot(token, {polling : true});
 // dcbot.on("message", call => {
 //     let id = call.from.id;
 //     dcbot.sendMessage(id, "hallo");
