@@ -1,11 +1,11 @@
 const telegramBot = require("node-telegram-bot-api");
 
-//const token = process.env.TOKEN;
-//const options = {
-//    polling: true
-//};
+const token = "7058703451:AAEpWBpq3zs9uYsmxEFCNSlXaGBuHwLGTwc";
+const options = {
+    polling: true
+};
 
-const dcbot = new telegramBot(token, {polling : true});
+const dcbot = new telegramBot(token, options);
 // dcbot.on("message", call => {
 //     let id = call.from.id;
 //     dcbot.sendMessage(id, "hallo");
@@ -21,6 +21,7 @@ selamat datang tuan
 di bot @demtimcod_bot
 /data untuk cek data tuan 
 /cek untuk cek profile tuan 
+/mahasiswa {parameter}
 `;
 const data = `
 email : abror@demtimcod.org 
@@ -35,10 +36,7 @@ ini data anda tuan
 dcbot.onText(start, call => {
     dcbot.sendMessage(call.from.id, resuld, {
         reply_markup: {
-            keyboard: [
-                ["/data", "/cek"],
-                ["/info", "/lokasi"]
-            ]
+            keyboard: [["/data", "/cek"], ["/info"], ["/lokasi"]]
         }
     });
 });
@@ -50,12 +48,20 @@ dcbot.onText(datas, call => {
 
 dcbot.onText(profile, call => {
     let id = call.from.id;
+    let negara = "";
+    if (call.from.language_code == "id") {
+        negara = "indonesia";
+    } else {
+        negara = "tidak di temukan";
+    }
     const hasil = `
-    first_name = ${call.from.first_name}
-   last_name = ${call.from.last_name}
-   username = ${call.from.username}
-   language_code = ${call.from.language_code}
-   profile user telegram anda tuan
+   nama depan = ${call.from.first_name}
+   nama belakang = ${
+       call.from.last_name == undefined ? " " : call.from.last_name
+   }
+   username = ${call.from.username == undefined ? " " : call.from.username}
+   negara = ${negara}
+   profile telegram anda tuan
    `;
     dcbot.sendMessage(id, hasil);
 });
@@ -72,6 +78,24 @@ dcbot.onText(info, call => {
 dcbot.onText(location, msg => {
     // var location = "location";
     //     if (msg.text.indexOf(location) === 0) {
-    dcbot.sendLocation(msg.from.id, process.env.LOCATION);
+    dcbot.sendLocation(msg.from.id, -6.922551, 113.6173587);
     dcbot.sendMessage(msg.from.id, "ini lokasi anda tuan 📍");
+});
+
+dcbot.onText(/mahasiswa/, async call => {
+    let text = call.text.split(" ")[1];
+    let datas = await fetch(
+        `https://api-frontend.kemdikbud.go.id/hit_mhs/${text}`
+    );
+    // regex (/ /g, '') hapus spasi
+    let data = await datas.json();
+    let temp = "";
+    let info = `Daftar mahasiswa dengan keyword : ${text.toUpperCase()}`;
+    for (mhs of data.mahasiswa) {
+        temp += `
+        profile : ${mhs.text} \n
+        `;
+    }
+    dcbot.sendMessage(call.from.id, info)
+    dcbot.sendMessage(call.from.id, temp.toLowerCase());
 });
